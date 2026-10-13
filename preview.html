@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WiFi Gauge — preview</title>
+<style>
+  :root {
+    --bg:#0B1220; --panel:#111A2E; --text:#E8EFF9; --dim:#8494AB;
+    --good:#33D17A; --bad:#E5484D; --amber:#F5A623;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:#05080f; font-family:-apple-system, "Helvetica Neue", Arial, sans-serif; color:var(--text); display:flex; justify-content:center; padding:32px 12px 60px; }
+  .phone { width:390px; background:var(--bg); border-radius:36px; border:1px solid #1d2c47; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.6); }
+  .screen { padding:18px 16px 14px; background:
+      radial-gradient(120% 90% at 50% 0%, #101c33 0%, var(--bg) 60%); }
+  .statusRow { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--dim); }
+  .bars { letter-spacing:2px; color:var(--amber); }
+  .gaugeWrap { margin-top:6px; }
+  .row { display:flex; justify-content:space-between; align-items:baseline; }
+  .ssid { font-size:17px; font-weight:700; }
+  .delta { font-size:14px; color:var(--good); }
+  .pct { font-size:16px; font-weight:700; }
+  .cap { font-size:11px; color:var(--dim); }
+  #spark { width:100%; height:58px; margin-top:12px; background:linear-gradient(#0e1830,#0b1220); border-radius:8px; }
+  .sensRow { display:flex; align-items:center; margin-top:14px; gap:12px; }
+  .sensLabel { font-size:13px; color:var(--dim); width:76px; }
+  .sensTrack { flex:1; height:4px; border-radius:2px; background:#1b2740; position:relative; }
+  .sensFill { position:absolute; left:0; top:0; height:4px; border-radius:2px; background:linear-gradient(90deg,#33D17A,#00E08F); width:80%; }
+  .sensKnob { position:absolute; left:80%; top:-6px; width:16px; height:16px; border-radius:50%; background:#E8EFF9; transform:translateX(-50%); box-shadow:0 0 0 5px rgba(51,209,122,.2); }
+  .sensVal { font-size:13px; color:var(--good); font-weight:700; }
+  note { display:block; margin-top:18px; font-size:11px; color:var(--dim); }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="screen">
+    <div class="statusRow">
+      <span style="color:var(--good)">● Live · RSSI fires on change + 100 ms poll</span>
+      <span class="bars">▮▮▮▯</span>
+    </div>
+
+    <div class="gaugeWrap">
+      <svg viewBox="0 0 360 360" width="100%" xmlns="http://www.w3.org/2000/svg">
+        <!-- base track -->
+        <circle cx="180" cy="190" r="140" fill="none" stroke="#18243C" stroke-width="26"/>
+        <path d="M58.8,260 A140,140 0 0 0 301.2,260" fill="none" stroke="#18243C" stroke-width="26"/>
+        <!-- zone arcs (radius 140, stroke 21) -->
+        <path d="M58.8,260 A140,140 0 0 1 42.1,165.7" fill="none" stroke="#E5484D" stroke-width="21"/>
+        <path d="M42.1,165.7 A140,140 0 0 1 90.0,82.8"  fill="none" stroke="#F76B15" stroke-width="21"/>
+        <path d="M90.0,82.8 A140,140 0 0 1 180,50"    fill="none" stroke="#F5A623" stroke-width="21"/>
+        <path d="M180,50 A140,140 0 0 1 270,82.8"     fill="none" stroke="#9BC432" stroke-width="21"/>
+        <path d="M270,82.8 A140,140 0 0 1 317.9,165.7" fill="none" stroke="#33D17A" stroke-width="21"/>
+        <path d="M317.9,165.7 A140,140 0 0 1 301.2,260" fill="none" stroke="#00E08F" stroke-width="21"/>
+        <!-- tick marks (major every 10 dBm, minor every 5) -->
+        <g stroke="#5A6B8C" stroke-width="2"></g>
+        <!-- computed needle: -67 dBm -> 282deg -->
+        <line x1="174.8" y1="214.5" x2="203.7" y2="78.5" stroke="#E8EFF9" stroke-width="6" stroke-linecap="round"/>
+        <line x1="203.7" y1="78.5" x2="214" y2="66" stroke="#E8EFF9" stroke-width="3" stroke-linecap="round"/>
+        <!-- hub -->
+        <circle cx="180" cy="190" r="12" fill="#111A2E" stroke="#00E08F" stroke-width="3"/>
+        <circle cx="180" cy="190" r="5" fill="#0B1220"/>
+        <text x="180" y="152" text-anchor="middle" fill="#00E08F" font-size="52" font-weight="800" font-family="Arial, sans-serif">63%</text>
+        <text x="180" y="212" text-anchor="middle" fill="#E8EFF9" font-size="20" font-family="Arial, sans-serif">-67 dBm</text>
+        <text x="180" y="238" text-anchor="middle" fill="#8494AB" font-size="12" font-family="Arial, sans-serif">WIFI · RSSI</text>
+        <!-- labels -->
+        <g font-size="13" fill="#8494AB" text-anchor="middle" font-family="Arial, sans-serif">
+          <text x="46" y="133">-90</text>
+          <text x="96" y="68">-80</text>
+          <text x="180" y="34">-70</text>
+          <text x="264" y="68">-60</text>
+          <text x="314" y="133">-50</text>
+          <text x="296" y="282">-40</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="row">
+      <span class="ssid">Home_5G</span>
+      <span class="delta">▲ +2 dBm</span>
+    </div>
+    <div class="row">
+      <span class="pct">Signal 63%</span>
+      <span class="cap">RSSI updates instantly (10×/s)</span>
+    </div>
+
+    <canvas id="spark"></canvas>
+
+    <div class="sensRow">
+      <span class="sensLabel">Sensitivity</span>
+      <div class="sensTrack"><div class="sensFill"></div><div class="sensKnob"></div></div>
+      <span class="sensVal">Fast</span>
+    </div>
+    <note>Analogue preview of the app's main screen · needle at -67 dBm (63%)</note>
+  </div>
+</div>
+<script>
+  const cv = document.getElementById('spark');
+  const dpr = window.devicePixelRatio || 1;
+  const W = cv.clientWidth, H = 58;
+  cv.width = W * dpr; cv.height = H * dpr;
+  const ctx = cv.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const pad = 6;
+  const rnd = (a,b)=>a + Math.random()*(b-a);
+  const N = 300;
+  const data = [];
+  let v = -70;
+  for (let i=0;i<N;i++){ v += rnd(-2.4,2.6); v = Math.min(-40, Math.max(-100, v)); data.push(v); }
+  const yFor = dbm => pad + (1 - (dbm+100)/60) * (H-2*pad);
+  ctx.strokeStyle = '#2E3E5E'; ctx.lineWidth = 1;
+  for (const g of [-90,-70,-50]) { const y=yFor(g); ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(W-pad,y); ctx.stroke(); }
+  const xStep = (W-2*pad)/(N-1);
+  ctx.beginPath();
+  data.forEach((dbm,i)=>{ const x=pad+i*xStep, y=yFor(dbm); i?ctx.lineTo(x,y):ctx.moveTo(x,y); });
+  ctx.strokeStyle = 'transparent';
+  ctx.lineTo(pad+(N-1)*xStep, H-pad); ctx.lineTo(pad, H-pad); ctx.closePath();
+  const grad = ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'rgba(51,209,122,.35)'); grad.addColorStop(1,'rgba(51,209,122,0)');
+  ctx.fillStyle = grad; ctx.fill();
+  ctx.beginPath();
+  data.forEach((dbm,i)=>{ const x=pad+i*xStep, y=yFor(dbm); i?ctx.lineTo(x,y):ctx.moveTo(x,y); });
+  ctx.strokeStyle = '#33D17A'; ctx.lineWidth = 2; ctx.lineJoin='round'; ctx.lineCap='round'; ctx.stroke();
+  const lx = pad+(N-1)*xStep, ly = yFor(data[N-1]);
+  ctx.beginPath(); ctx.arc(lx,ly,3,0,Math.PI*2); ctx.fillStyle='#E8EFF9'; ctx.fill();
+</script>
+</body>
+</html>
